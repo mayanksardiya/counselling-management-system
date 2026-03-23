@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Counselor</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background: #f0f2f5; }
+        nav { background: #1a73e8; color: white; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        nav a { color: white; text-decoration: none; margin-left: 1rem; }
+        .chatbot-container { max-width: 700px; margin: 2rem auto; padding: 1rem; }
+        .chatbot-container h2 { margin-bottom: 0.5rem; color: #1a73e8; }
+        .chatbot-container p { margin-bottom: 1rem; color: #666; }
+        .chat-box { background: white; height: 400px; overflow-y: auto; padding: 1rem; border-radius: 10px; margin-bottom: 1rem; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .bot-message { background: #e8f0fe; padding: 0.8rem; border-radius: 10px; margin-bottom: 0.8rem; max-width: 80%; }
+        .user-message { background: #1a73e8; color: white; padding: 0.8rem; border-radius: 10px; margin-bottom: 0.8rem; max-width: 80%; margin-left: auto; }
+        .chat-input { display: flex; gap: 0.5rem; }
+        .chat-input input { flex: 1; padding: 0.8rem; border: 1px solid #ddd; border-radius: 25px; font-size: 1rem; }
+        .chat-input button { background: #1a73e8; color: white; border: none; border-radius: 25px; padding: 0.8rem 1.5rem; cursor: pointer; font-size: 1rem; }
+    </style>
+</head>
+<body>
+    <nav>
+        <h1>🎓 College Admission Portal</h1>
+        <div>
+            <a href="dashboard.html">Dashboard</a>
+            <a href="index.html">Logout</a>
+        </div>
+    </nav>
+    <div class="chatbot-container">
+        <h2>🤖 AI Admission Counselor</h2>
+        <p>Ask me anything about admissions, branches, or eligibility!</p>
+        <div class="chat-box" id="chatBox">
+            <div class="bot-message">Hello! I am your AI counselor. How can I help you today?</div>
+        </div>
+        <div class="chat-input">
+            <input type="text" id="userInput" placeholder="Type your question..." onkeypress="if(event.key==='Enter') sendMessage()"/>
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+    <script>
+        async function sendMessage() {
+            const input = document.getElementById('userInput');
+            const message = input.value.trim();
+            if (!message) return;
+            const chatBox = document.getElementById('chatBox');
+            chatBox.innerHTML += `<div class="user-message">${message}</div>`;
+            input.value = '';
+            chatBox.scrollTop = chatBox.scrollHeight;
+            try {
+                const res = await fetch('http://localhost:8080/api/chatbot', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message })
+                });
+                const result = await res.json();
+                chatBox.innerHTML += `<div class="bot-message">${result.reply}</div>`;
+            } catch (err) {
+                chatBox.innerHTML += `<div class="bot-message">Sorry, I am unavailable right now.</div>`;
+            }
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+    </script>
+</body>
+</html>

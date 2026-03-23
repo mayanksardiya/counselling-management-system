@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background: #f0f2f5; }
+        nav { background: #1a73e8; color: white; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        nav a { color: white; text-decoration: none; margin-left: 1rem; }
+        .form-container { max-width: 500px; margin: 3rem auto; background: white; padding: 2rem; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h2 { margin-bottom: 1.5rem; color: #1a73e8; text-align: center; }
+        input, select { width: 100%; padding: 0.8rem; margin-bottom: 1rem; border: 1px solid #ddd; border-radius: 5px; font-size: 1rem; }
+        button { width: 100%; background: #1a73e8; color: white; padding: 0.9rem; border: none; border-radius: 5px; font-size: 1rem; cursor: pointer; }
+        #message { text-align: center; margin-top: 1rem; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <nav>
+        <h1>🎓 College Admission Portal</h1>
+        <div>
+            <a href="index.html">Home</a>
+            <a href="login.html">Login</a>
+        </div>
+    </nav>
+
+    <div class="form-container">
+        <h2>Student Registration</h2>
+        <form id="registerForm">
+            <input type="text" id="fullName" placeholder="Full Name" required/>
+            <input type="email" id="email" placeholder="Email" required/>
+            <input type="password" id="password" placeholder="Password" required/>
+            <input type="text" id="phone" placeholder="Phone Number" required/>
+            <input type="number" id="tenthMarks" placeholder="10th Marks %" required/>
+            <input type="number" id="twelfthMarks" placeholder="12th Marks %" required/>
+            <input type="number" id="entranceScore" placeholder="Entrance Score" required/>
+            <select id="preferredBranch">
+                <option value="">Select Preferred Branch</option>
+                <option value="Computer Science">Computer Science</option>
+                <option value="Electronics">Electronics</option>
+                <option value="Mechanical">Mechanical</option>
+                <option value="Civil">Civil</option>
+            </select>
+            <button type="submit">Register</button>
+        </form>
+        <p id="message"></p>
+    </div>
+
+    <script>
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = {
+                fullName: document.getElementById('fullName').value,
+                email: document.getElementById('email').value,
+                password: document.getElementById('password').value,
+                phone: document.getElementById('phone').value,
+                tenthMarks: document.getElementById('tenthMarks').value,
+                twelfthMarks: document.getElementById('twelfthMarks').value,
+                entranceScore: document.getElementById('entranceScore').value,
+                preferredBranch: document.getElementById('preferredBranch').value
+            };
+            try {
+                const res = await fetch('http://localhost:8080/api/students/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const result = await res.json();
+                if (res.ok) {
+                    localStorage.setItem('student', JSON.stringify(result));
+                    document.getElementById('message').style.color = 'green';
+                    document.getElementById('message').textContent = 'Registered successfully! Redirecting...';
+                    setTimeout(() => window.location.href = 'dashboard.html', 1500);
+                } else {
+                    document.getElementById('message').style.color = 'red';
+                    document.getElementById('message').textContent = result;
+                }
+            } catch (err) {
+                document.getElementById('message').style.color = 'red';
+                document.getElementById('message').textContent = 'Cannot connect to server. Is backend running?';
+            }
+        });
+    </script>
+</body>
+</html>
